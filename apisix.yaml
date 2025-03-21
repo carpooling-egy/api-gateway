@@ -1,0 +1,19 @@
+routes:
+  -
+    id: httpbin
+    uri: /*
+    upstream:
+      nodes:
+        "nginx:80": 1 # placeholder
+      type: roundrobin
+    plugins:
+      forward-auth:
+        uri: "http://auth-service:8003/auth/verify"
+        request_headers:
+          - Authorization
+        upstream_headers:
+          - X-User-UUID
+          - X-User-Email
+          - X-User-Roles
+
+#END
