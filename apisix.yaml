@@ -20,4 +20,22 @@ routes:
       <<: *forward-auth-plugin
     # strip_uri: true # Ensures the upstream service receives a clean request path without the matching prefix
 
+# resource: https://security.stackexchange.com/questions/197613/is-it-better-to-rate-limit-api-requests-based-on-userid-or-ip-address-for-authen
+# not sure if this is the best way to do it, but we can start with this and see how it goes, though using JWT token as the key for rate limiting may not be the best and user_id is better 
+global_rules:
+  - id: global-rate-limit-per-ip
+    plugins:
+      limit-count:
+        count: 10                      # Max 5000 requests
+        time_window: 60                   # Per 60 seconds
+        key: "remote_addr"                # IP-based rate limiting
+        rejected_code: 429
+  - id: global-rate-limit-per-user
+    plugins:
+      limit-count:
+        count: 5                        # Max 5 requests
+        time_window: 10                 # Per 10 seconds
+        key: "http_header_Authorization"  # Limits based on JWT token
+        rejected_code: 429
+
 #END
