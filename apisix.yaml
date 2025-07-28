@@ -10,15 +10,40 @@ x-forward-auth: &forward-auth-plugin
 
 routes:
   -
-    id: httpbin
+    id: profile-api
     uri: /profiles/* # It might be better to move to using subdomains instead of matching based on URIs
     upstream:
       nodes:
-        "profile-service:8080": 1 # placeholder
+        "profile-service:8080": 1 # placeholder for port
       type: roundrobin
     plugins:
       <<: *forward-auth-plugin
     # strip_uri: true # Ensures the upstream service receives a clean request path without the matching prefix
+
+
+  -
+    id: trip-management-api
+    uri: /trip/* # It might be better to move to using subdomains instead of matching based on URIs
+    upstream:
+      nodes:
+        "trip-management-service:8081": 1 # placeholder for port
+      type: roundrobin
+    plugins:
+      <<: *forward-auth-plugin
+    strip_uri: true # Ensures the upstream service receives a clean request path without the matching prefix
+
+
+  -
+    id: request-management-api
+    uri: /request/* # It might be better to move to using subdomains instead of matching based on URIs
+    upstream:
+      nodes:
+        "request-management-service:8082": 1 # placeholder for port
+      type: roundrobin
+    plugins:
+      <<: *forward-auth-plugin
+    strip_uri: true # Ensures the upstream service receives a clean request path without the matching prefix
+
 
 # resource: https://security.stackexchange.com/questions/197613/is-it-better-to-rate-limit-api-requests-based-on-userid-or-ip-address-for-authen
 # not sure if this is the best way to do it, but we can start with this and see how it goes, though using JWT token as the key for rate limiting may not be the best and user_id is better 
